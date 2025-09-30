@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Privacy Policy — {{APP_NAME}}</title>
+  <meta name="description" content="Example Privacy Policy for a Microsoft Teams app package." />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #111827;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --border: #e5e7eb;
+      --card: #f9fafb;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b0f19;
+        --fg: #e5e7eb;
+        --muted: #9ca3af;
+        --primary: #60a5fa;
+        --border: #1f2937;
+        --card: #111827;
+      }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, 'Helvetica Neue', Arial, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif; line-height: 1.6; }
+    header { background: linear-gradient(180deg, rgba(37,99,235,0.10), transparent); border-bottom: 1px solid var(--border); }
+    .container { max-width: 960px; margin: 0 auto; padding: 2rem 1.25rem; }
+    h1 { font-size: 2rem; margin: 0 0 0.25rem; }
+    .subtitle { color: var(--muted); margin: 0.25rem 0 0; }
+    .badge { display: inline-block; font-size: 0.825rem; padding: 0.25rem 0.5rem; border: 1px solid var(--border); border-radius: 999px; color: var(--muted); }
+    nav.toc { background: var(--card); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1rem; margin: 1.25rem 0 2rem; }
+    nav.toc a { color: var(--primary); text-decoration: none; }
+    nav.toc a:hover, a:focus { text-decoration: underline; }
+    h2 { margin-top: 2rem; font-size: 1.25rem; }
+    section { margin-bottom: 1.5rem; }
+    p { margin: 0.5rem 0; }
+    ul { margin: 0.5rem 0 0.5rem 1.25rem; }
+    code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 0.95em; }
+    footer { border-top: 1px solid var(--border); margin-top: 2rem; padding-top: 1rem; color: var(--muted); }
+    .meta { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+    .right { text-align: right; }
+    .grid-2 { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+    @media (min-width: 720px) { .grid-2 { grid-template-columns: 1fr 1fr; } .right { text-align: right; } }
+    /* Print-friendly */
+    @media print {
+      header, nav.toc { background: transparent !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      a { color: black !important; text-decoration: underline !important; }
+      .badge { border-color: black !important; color: black !important; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="grid-2">
+        <div>
+          <h1>Privacy Policy</h1>
+          <p class="subtitle">{{APP_NAME}} — Microsoft Teams Application</p>
+        </div>
+        <div class="right">
+          <span class="badge">Version: {{VERSION}} • Last updated: {{LAST_UPDATED}}</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" role="main">
+    <nav class="toc" aria-label="Table of contents">
+      <strong>Contents</strong>
+      <ul>
+        <li><a href="#scope">1. Scope & Roles</a></li>
+        <li><a href="#data-we-collect">2. Data We Collect</a></li>
+        <li><a href="#sources">3. Sources of Personal Data</a></li>
+        <li><a href="#purposes">4. Purposes & Legal Bases</a></li>
+        <li><a href="#processing">5. How We Process Data</a></li>
+        <li><a href="#retention">6. Retention</a></li>
+        <li><a href="#security">7. Security</a></li>
+        <li><a href="#sharing">8. Sharing & Disclosures</a></li>
+        <li><a href="#transfers">9. International Transfers</a></li>
+        <li><a href="#rights">10. Your Privacy Rights</a></li>
+        <li><a href="#children">11. Children’s Privacy</a></li>
+        <li><a href="#automated">12. Automated Decision-Making</a></li>
+        <li><a href="#cookies">13. Cookies & Similar Technologies</a></li>
+        <li><a href="#requests">14. Submitting Privacy Requests</a></li>
+        <li><a href="#changes">15. Changes to this Policy</a></li>
+        <li><a href="#contact">16. Contact</a></li>
+        <li><a href="#definitions">17. Definitions</a></li>
+      </ul>
+    </nav>
+
+    <section id="intro">
+      <p>This Privacy Policy explains how <strong>{{PUBLISHER_NAME}}</strong> (<strong>"we"</strong>, <strong>"us"</strong>, or <strong>"our"</strong>) collects, uses, shares, and protects information when you use the <span class="mono">{{APP_NAME}}</span> Microsoft Teams application (the <strong>"App"</strong>).</p>
+      <p><em>Note:</em> This is a template intended as an example for your Teams app package. Please consult your legal counsel to tailor it to your organization and applicable laws.</p>
+    </section>
+
+    <section id="scope">
+      <h2>1. Scope & Roles</h2>
+      <p>Depending on the deployment model, we may act as a <strong>controller</strong> (determining purposes/means of processing) or a <strong>processor</strong> (processing on behalf of your organization). Where we act as a processor, your organization is the controller and our processing is subject to their instructions.</p>
+    </section>
+
+    <section id="data-we-collect">
+      <h2>2. Data We Collect</h2>
+      <p>Categories of personal data we may process include:</p>
+      <ul>
+        <li><strong>Account & Identity:</strong> name, email, tenant ID, user ID, role/group membership.</li>
+        <li><strong>Usage & Telemetry:</strong> logs, events, diagnostics, interaction metadata, device type.</li>
+        <li><strong>Content:</strong> messages, files, prompts, or records you submit within the App (collectively, “User Content”).</li>
+        <li><strong>Support:</strong> information you provide to our support team.</li>
+      </ul>
+      <p><strong>Sensitive data:</strong> do not submit special categories of data (e.g., health, biometric, precise geolocation) unless explicitly permitted by your organization and applicable law.</p>
+    </section>
+
+    <section id="sources">
+      <h2>3. Sources of Personal Data</h2>
+      <ul>
+        <li><strong>Directly from you</strong> when you install or use the App.</li>
+        <li><strong>From Microsoft</strong> via Microsoft Teams APIs as authorized by your tenant.</li>
+        <li><strong>From your organization</strong> (e.g., identity provider groups, permissions, directories).</li>
+        <li><strong>From our service providers</strong> who assist in delivering the App.</li>
+      </ul>
+    </section>
+
+    <section id="purposes">
+      <h2>4. Purposes & Legal Bases</h2>
+      <p>We use personal data for the following purposes, under legal bases that may include contract, legitimate interests, consent, and compliance with legal obligations:</p>
+      <ul>
+        <li>Providing and operating the App’s features within Microsoft Teams;</li>
+        <li>Authentication, authorization, auditing, and preventing misuse;</li>
+        <li>Improving performance, reliability, and user experience;</li>
+        <li>Providing customer support and troubleshooting;</li>
+        <li>Compliance with applicable laws, investigations, and enforcement.</li>
+      </ul>
+    </section>
+
+    <section id="processing">
+      <h2>5. How We Process Data</h2>
+      <p>Processing activities may include collection, recording, structuring, storage, adaptation, retrieval, transmission, restriction, and deletion of data. We apply appropriate safeguards and access controls based on the principle of least privilege.</p>
+    </section>
+
+    <section id="retention">
+      <h2>6. Retention</h2>
+      <p>We retain personal data only for as long as necessary to fulfill the purposes described above or as required by law or by your organization’s policies. Retention periods may vary by data category and context of processing.</p>
+    </section>
+
+    <section id="security">
+      <h2>7. Security</h2>
+      <p>We implement administrative, technical, and physical safeguards designed to protect personal data against unauthorized access, disclosure, alteration, or destruction. No method of transmission or storage is 100% secure; we cannot guarantee absolute security.</p>
+    </section>
+
+    <section id="sharing">
+      <h2>8. Sharing & Disclosures</h2>
+      <p>We may share personal data with:</p>
+      <ul>
+        <li><strong>Service providers</strong> under contractual confidentiality and data protection terms;</li>
+        <li><strong>Microsoft</strong> and other integrated services, when necessary for App functionality;</li>
+        <li><strong>Your organization</strong> (e.g., administrators) for governance, security, and compliance;</li>
+        <li><strong>Authorities</strong> when required by law or to protect rights, safety, and property;</li>
+        <li><strong>Corporate transactions</strong> (e.g., merger, acquisition), subject to appropriate safeguards.</li>
+      </ul>
+      <p>We do not sell personal data.</p>
+    </section>
+
+    <section id="transfers">
+      <h2>9. International Transfers</h2>
+      <p>Where personal data is transferred across borders, we rely on appropriate transfer mechanisms (e.g., standard contractual clauses) and implement additional safeguards where required.</p>
+    </section>
+
+    <section id="rights">
+      <h2>10. Your Privacy Rights</h2>
+      <p>Depending on your location, you may have rights such as access, rectification, deletion, portability, restriction, objection, and withdrawal of consent. You may also have the right to lodge a complaint with a supervisory authority.</p>
+      <p>To exercise your rights, see <a href="#requests">Submitting Privacy Requests</a>.</p>
+    </section>
+
+    <section id="children">
+      <h2>11. Children’s Privacy</h2>
+      <p>The App is intended for use by business users. We do not knowingly collect personal data from children. If we learn that we have collected such data, we will take steps to delete it.</p>
+    </section>
+
+    <section id="automated">
+      <h2>12. Automated Decision-Making</h2>
+      <p>The App does not engage in profiling or automated decision-making that produces legal or similarly significant effects without appropriate safeguards or human oversight.</p>
+    </section>
+
+    <section id="cookies">
+      <h2>13. Cookies & Similar Technologies</h2>
+      <p>The App may use cookies or similar technologies where applicable (e.g., web views). Where required by law, we will obtain consent and provide controls to manage preferences.</p>
+    </section>
+
+    <section id="requests">
+      <h2>14. Submitting Privacy Requests</h2>
+      <p>To exercise your rights or submit a privacy inquiry, contact us at <a href="mailto:{{SUPPORT_EMAIL}}">{{SUPPORT_EMAIL}}</a> or use {{SUPPORT_URL}}. If we act as a processor, we will forward requests to your organization as controller.</p>
+      <p>If applicable, you may also contact our Data Protection Officer (DPO) at <a href="mailto:{{DPO_EMAIL}}">{{DPO_EMAIL}}</a>.</p>
+    </section>
+
+    <section id="changes">
+      <h2>15. Changes to this Policy</h2>
+      <p>We may update this Policy from time to time. Material changes will be communicated via Microsoft Teams, our website, or through your organization. Continued use of the App after changes become effective constitutes acceptance of the updated Policy.</p>
+    </section>
+
+    <section id="contact">
+      <h2>16. Contact</h2>
+      <p>Questions about this Policy? Contact us at <a href="mailto:{{SUPPORT_EMAIL}}">{{SUPPORT_EMAIL}}</a> or visit <a href="{{SUPPORT_URL}}" target="_blank" rel="noopener">{{SUPPORT_URL}}</a>.</p>
+      <p class="mono">App ID: {{MICROSOFT_APP_ID}} • Publisher: {{PUBLISHER_NAME}} • Terms: <a href="{{TERMS_URL}}" target="_blank" rel="noopener">{{TERMS_URL}}</a></p>
+    </section>
+
+    <section id="definitions">
+      <h2>17. Definitions</h2>
+      <ul>
+        <li><strong>"Controller"</strong> determines purposes and means of processing personal data.</li>
+        <li><strong>"Processor"</strong> processes personal data on behalf of the controller.</li>
+        <li><strong>"Personal data"</strong> means any information relating to an identified or identifiable natural person.</li>
+        <li><strong>"Processing"</strong> means any operation performed on personal data (e.g., collection, use, disclosure).</li>
+      </ul>
+    </section>
+
+    <footer>
+      <div class="meta">
+        <span>© <span id="year"></span> {{PUBLISHER_NAME}}. All rights reserved.</span>
+        <span>Terms of Use: <a href="{{TERMS_URL}}" target="_blank" rel="noopener">{{TERMS_URL}}</a></span>
+        <span>Privacy URL (this page): <a href="{{PRIVACY_POLICY_URL}}" target="_blank" rel="noopener">{{PRIVACY_POLICY_URL}}</a></span>
+        <span>Jurisdiction: {{GOVERNING_LAW_JURISDICTION}} • Venue: {{VENUE_LOCATION}}</span>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    (function() {
+      var y = document.getElementById('year');
+      if (y && !y.textContent) y.textContent = new Date().getFullYear();
+    })();
+  </script>
+</body>
+</html>

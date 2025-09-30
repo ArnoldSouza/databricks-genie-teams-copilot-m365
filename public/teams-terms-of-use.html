@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Terms of Use — {{APP_NAME}}</title>
+  <meta name="description" content="Example Terms of Use for a Microsoft Teams app package." />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #111827;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --border: #e5e7eb;
+      --card: #f9fafb;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b0f19;
+        --fg: #e5e7eb;
+        --muted: #9ca3af;
+        --primary: #60a5fa;
+        --border: #1f2937;
+        --card: #111827;
+      }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, 'Helvetica Neue', Arial, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif; line-height: 1.6; }
+    header { background: linear-gradient(180deg, rgba(37,99,235,0.10), transparent); border-bottom: 1px solid var(--border); }
+    .container { max-width: 960px; margin: 0 auto; padding: 2rem 1.25rem; }
+    h1 { font-size: 2rem; margin: 0 0 0.25rem; }
+    .subtitle { color: var(--muted); margin: 0.25rem 0 0; }
+    .badge { display: inline-block; font-size: 0.825rem; padding: 0.25rem 0.5rem; border: 1px solid var(--border); border-radius: 999px; color: var(--muted); }
+    nav.toc { background: var(--card); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1rem; margin: 1.25rem 0 2rem; }
+    nav.toc a { color: var(--primary); text-decoration: none; }
+    nav.toc a:hover, a:focus { text-decoration: underline; }
+    h2 { margin-top: 2rem; font-size: 1.25rem; }
+    section { margin-bottom: 1.5rem; }
+    p { margin: 0.5rem 0; }
+    ul { margin: 0.5rem 0 0.5rem 1.25rem; }
+    code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 0.95em; }
+    footer { border-top: 1px solid var(--border); margin-top: 2rem; padding-top: 1rem; color: var(--muted); }
+    .meta { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+    .right { text-align: right; }
+    .grid-2 { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+    @media (min-width: 720px) { .grid-2 { grid-template-columns: 1fr 1fr; } .right { text-align: right; } }
+    /* Print-friendly */
+    @media print {
+      header, nav.toc { background: transparent !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      a { color: black !important; text-decoration: underline !important; }
+      .badge { border-color: black !important; color: black !important; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="grid-2">
+        <div>
+          <h1>Terms of Use</h1>
+          <p class="subtitle">{{APP_NAME}} — Microsoft Teams Application</p>
+        </div>
+        <div class="right">
+          <span class="badge">Version: {{VERSION}} • Last updated: {{LAST_UPDATED}}</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" role="main">
+    <nav class="toc" aria-label="Table of contents">
+      <strong>Contents</strong>
+      <ul>
+        <li><a href="#acceptance">1. Acceptance of Terms</a></li>
+        <li><a href="#eligibility">2. Eligibility</a></li>
+        <li><a href="#use">3. Permitted Use & Restrictions</a></li>
+        <li><a href="#user-content">4. User Content</a></li>
+        <li><a href="#privacy">5. Privacy & Data Processing</a></li>
+        <li><a href="#third-parties">6. Third‑Party Services (incl. Microsoft)</a></li>
+        <li><a href="#ip">7. Intellectual Property</a></li>
+        <li><a href="#disclaimers">8. Disclaimers</a></li>
+        <li><a href="#liability">9. Limitation of Liability</a></li>
+        <li><a href="#indemnity">10. Indemnification</a></li>
+        <li><a href="#suspension">11. Suspension & Termination</a></li>
+        <li><a href="#changes">12. Changes to the Terms</a></li>
+        <li><a href="#law">13. Governing Law & Venue</a></li>
+        <li><a href="#contact">14. Contact</a></li>
+      </ul>
+    </nav>
+
+    <section id="intro">
+      <p>These Terms of Use (the <strong>"Terms"</strong>) govern your access to and use of the <span class="mono">{{APP_NAME}}</span> Microsoft Teams application (the <strong>"App"</strong>) provided by <strong>{{PUBLISHER_NAME}}</strong> (<strong>"we"</strong>, <strong>"us"</strong>, or <strong>"our"</strong>). By installing, accessing, or using the App, you agree to be bound by these Terms.</p>
+    </section>
+
+    <section id="acceptance">
+      <h2>1. Acceptance of Terms</h2>
+      <p>By selecting "Add", "Install", or otherwise accessing the App in Microsoft Teams, you acknowledge that you have read, understood, and agree to these Terms and our <a href="{{PRIVACY_POLICY_URL}}" rel="noopener" target="_blank">Privacy Policy</a>. If you do not agree, do not use the App.</p>
+    </section>
+
+    <section id="eligibility">
+      <h2>2. Eligibility</h2>
+      <p>You represent and warrant that you: (a) are authorized by your organization to use Microsoft Teams apps; (b) are at least the age of majority in your jurisdiction; and (c) will comply with all applicable laws and policies, including your employer’s acceptable use policies.</p>
+    </section>
+
+    <section id="use">
+      <h2>3. Permitted Use & Restrictions</h2>
+      <p>You may use the App only for its intended business purpose within Microsoft Teams. You agree not to:</p>
+      <ul>
+        <li>Reverse engineer, decompile, or attempt to derive the source code of the App;</li>
+        <li>Circumvent or disable any security or technical measures;</li>
+        <li>Upload or transmit malicious code, or use the App to violate the rights of others;</li>
+        <li>Use the App to store or process data prohibited by your organization or applicable laws;</li>
+        <li>Access or use the App for competitive analysis or benchmarking without our prior written consent.</li>
+      </ul>
+    </section>
+
+    <section id="user-content">
+      <h2>4. User Content</h2>
+      <p>You are responsible for any content, data, or materials you input or transmit through the App (<strong>"User Content"</strong>). You represent that you have all necessary rights to the User Content and that it does not infringe any third‑party rights or violate any laws. You grant us a limited, non‑exclusive license to process User Content solely to provide and improve the App.</p>
+    </section>
+
+    <section id="privacy">
+      <h2>5. Privacy & Data Processing</h2>
+      <p>We process personal data as described in our <a href="{{PRIVACY_POLICY_URL}}" rel="noopener" target="_blank">Privacy Policy</a>. Where we act as a processor on behalf of your organization, our processing is subject to the instructions of your organization as controller. Do not submit special categories of personal data unless explicitly requested and permitted by your organization’s policies.</p>
+    </section>
+
+    <section id="third-parties">
+      <h2>6. Third‑Party Services (incl. Microsoft)</h2>
+      <p>The App operates within Microsoft Teams and may interoperate with other Microsoft or third‑party services. Your use of such services is governed by their respective terms and policies. We are not responsible for third‑party services and do not control their availability or performance.</p>
+    </section>
+
+    <section id="ip">
+      <h2>7. Intellectual Property</h2>
+      <p>The App, including all associated software, content, and materials, is owned by us or our licensors and is protected by intellectual property laws. Except for the rights expressly granted in these Terms, no license is granted to you by implication or otherwise.</p>
+    </section>
+
+    <section id="disclaimers">
+      <h2>8. Disclaimers</h2>
+      <p>The App is provided on an <strong>"AS IS"</strong> and <strong>"AS AVAILABLE"</strong> basis. To the fullest extent permitted by law, we disclaim all warranties, whether express, implied, or statutory, including merchantability, fitness for a particular purpose, and non‑infringement. We do not warrant that the App will be uninterrupted, error‑free, or secure.</p>
+    </section>
+
+    <section id="liability">
+      <h2>9. Limitation of Liability</h2>
+      <p>To the maximum extent permitted by law, in no event will we be liable for any indirect, incidental, special, consequential, or punitive damages, or for any loss of profits, revenue, data, or goodwill, arising out of or related to your use of the App, even if advised of the possibility of such damages. Our aggregate liability arising from or relating to the App will not exceed the greater of (a) USD $100 or (b) the amounts paid by your organization for access to the App in the 12 months prior to the event giving rise to liability.</p>
+    </section>
+
+    <section id="indemnity">
+      <h2>10. Indemnification</h2>
+      <p>You agree to defend, indemnify, and hold harmless {{PUBLISHER_NAME}} and its affiliates, officers, employees, and agents from and against any claims, liabilities, damages, losses, and expenses (including reasonable attorneys’ fees) arising out of or in any way connected with your misuse of the App or violation of these Terms.</p>
+    </section>
+
+    <section id="suspension">
+      <h2>11. Suspension & Termination</h2>
+      <p>We may suspend or terminate your access to the App at any time if we believe you have violated these Terms, pose a security risk, or as required by law or by your organization. Upon termination, the rights granted to you will immediately cease.</p>
+    </section>
+
+    <section id="changes">
+      <h2>12. Changes to the Terms</h2>
+      <p>We may update these Terms from time to time. Material changes will be communicated via Microsoft Teams, our website, or through your organization. Continued use of the App after changes become effective constitutes acceptance of the updated Terms.</p>
+    </section>
+
+    <section id="law">
+      <h2>13. Governing Law & Venue</h2>
+      <p>These Terms are governed by the laws of {{GOVERNING_LAW_JURISDICTION}} without regard to conflict‑of‑laws rules. Any disputes will be resolved exclusively in the courts located in {{VENUE_LOCATION}}, and you consent to their jurisdiction.</p>
+    </section>
+
+    <section id="contact">
+      <h2>14. Contact</h2>
+      <p>Questions about these Terms? Contact us at <a href="mailto:{{SUPPORT_EMAIL}}">{{SUPPORT_EMAIL}}</a> or visit <a href="{{SUPPORT_URL}}" target="_blank" rel="noopener">{{SUPPORT_URL}}</a>.</p>
+      <p class="mono">App ID: {{MICROSOFT_APP_ID}} • Publisher: {{PUBLISHER_NAME}}</p>
+    </section>
+
+    <footer>
+      <div class="meta">
+        <span>© <span id="year"></span> {{PUBLISHER_NAME}}. All rights reserved.</span>
+        <span>Privacy Policy: <a href="{{PRIVACY_POLICY_URL}}" target="_blank" rel="noopener">{{PRIVACY_POLICY_URL}}</a></span>
+        <span>Terms URL (this page): <a href="{{TERMS_URL}}" target="_blank" rel="noopener">{{TERMS_URL}}</a></span>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    // Set current year if placeholders are not replaced
+    (function() {
+      var y = document.getElementById('year');
+      if (y && !y.textContent) y.textContent = new Date().getFullYear();
+    })();
+  </script>
+</body>
+</html>

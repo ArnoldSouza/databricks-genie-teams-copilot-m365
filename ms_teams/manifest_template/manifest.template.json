@@ -1,0 +1,67 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.23/MicrosoftTeams.schema.json",
+  "version": "1.0.0",
+  "manifestVersion": "1.23",
+  "id": "${uuid_value}",
+  "name": {
+    "short": "Databricks Genie",
+    "full": "Databricks Genie Agent"
+  },
+  "developer": {
+    "name": "arnoldporto@gmail.com",
+    "websiteUrl": "https://${hostname}",
+    "privacyUrl": "https://${hostname}/teams-privacy-policy.html",
+    "termsOfUseUrl": "https://${hostname}/teams-terms-of-use.html"
+  },
+  "description": {
+    "short": "Query and analyze Databricks data directly in Teams.",
+    "full": "The Databricks Genie Agent helps you explore, query, and analyze datasets hosted in Databricks directly from Microsoft Teams. It simplifies access to financial, operational, and analytics data, empowering business users with quick insights without leaving Teams."
+  },
+  "icons": {
+    "outline": "outline.png",
+    "color": "color.png"
+  },
+  "accentColor": "#ffffff",
+  "bots": [
+    {
+      "botId": "${app_id}",
+      "scopes": [
+        "personal",
+        "groupChat"
+      ],
+      "isNotificationOnly": false,
+      "supportsCalling": false,
+      "supportsVideo": false,
+      "supportsFiles": false
+    }
+  ],
+  "validDomains": [
+    "${hostname}"
+  ],
+  "webApplicationInfo": {
+    "id": "${app_id}"
+  },
+  "devicePermissions": [
+    "geolocation",
+    "media",
+    "notifications",
+    "midi",
+    "openExternal"
+  ],
+  "defaultGroupCapability": {
+    "team": "bot",
+    "groupchat": "bot",
+    "meetings": "bot"
+  },
+  "configurableProperties": [
+    "name",
+    "shortDescription",
+    "longDescription",
+    "smallImageUrl",
+    "largeImageUrl",
+    "accentColor",
+    "developerUrl",
+    "privacyUrl",
+    "termsOfUseUrl"
+  ]
+}
