@@ -11,8 +11,8 @@ resource "azurerm_key_vault" "kv" {
   sku_name            = "standard"
 
   # boas práticas
-  soft_delete_retention_days = 90
-  purge_protection_enabled   = true
+  soft_delete_retention_days = 7
+  purge_protection_enabled   = false
 
   # usaremos RBAC em vez de Access Policies
   rbac_authorization_enabled = true

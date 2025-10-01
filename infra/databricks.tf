@@ -11,50 +11,127 @@ resource "databricks_service_principal_secret" "genie_oauth" {
   service_principal_id = databricks_service_principal.genie.id
 }
 
-# 3) Grant CAN_RUN on Genie Space to the SP (Workspace Permissions API)
 resource "null_resource" "grant_space_can_run" {
   triggers = {
-    space_id  = var.databricks_space_id
-    sp_id     = databricks_service_principal.genie.id
-    host      = var.databricks_host
-    token_sha = sha256(var.databricks_token)
+    # força re-execução quando algo relevante muda
+    always_run = timestamp()
+    host       = var.databricks_host
+    space      = var.databricks_space_id
+    spn        = databricks_service_principal.genie.application_id
+    # se você usa PAT para infra, pode incluir o token aqui
+    token_hash = md5(var.databricks_token)
   }
 
+  # garanta bash (não /bin/sh)
   provisioner "local-exec" {
-    interpreter = ["/bin/sh", "-c"]
-    command     = <<EOF
-set -eu
+    interpreter = ["/bin/bash", "-lc"]
+    command     = <<-EOT
+      set -euo pipefail
 
-HOST="${var.databricks_host}"
-TOKEN="${var.databricks_token}"
-SPACE="${var.databricks_space_id}"
-# For permissions API, service_principal_name should be the AAD application (client) ID (GUID)
-SPN="${databricks_service_principal.genie.application_id}"
+      HOST="${var.databricks_host}"
+      TOKEN="${var.databricks_token}"
+      SPACE="${var.databricks_space_id}"
+      # Para o Permissions API, é o Application (client) ID do SP (GUID)
+      SPN="${databricks_service_principal.genie.application_id}"
 
-# Trim trailing slash (note the $$ to escape Bash for Terraform)
-HOST="$${HOST%/}"
+      # Remove barra final (escape com $$ no HCL)
+      HOST="$${HOST%/}"
 
-TMP="./grant_space_can_run.body.json"
+      CURRENT="$(mktemp)"
+      TMP="$(mktemp)"
+      trap 'rm -f "$CURRENT" "$TMP"' EXIT
 
-# Build request body: Workspace Permissions API expects "service_principal_name" + "permission_level"
-BODY=$(printf '%s' '{"access_control_list":[{"service_principal_name":"'"$SPN"'","permission_level":"CAN_RUN"}]}')
+      # Lê o estado atual (ignora erro se 404)
+      curl -fsS -o "$CURRENT" \
+        -X GET "$HOST/api/2.0/permissions/genie/$SPACE" \
+        -H "Authorization: Bearer $TOKEN" \
+        -H "Content-Type: application/json" \
+        || true
 
-HTTP_CODE=$(curl -fsS -w '%%{http_code}' -o "$TMP" \
-  -X PATCH "$HOST/api/2.0/permissions/genie/$SPACE" \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d "$BODY")
+      # Se já tiver CAN_RUN para o SPN, sai com sucesso
+      if python3 - "$SPN" "$CURRENT" <<'PY'
+import json, sys
+spn, path = sys.argv[1], sys.argv[2]
+try:
+    with open(path, "r", encoding="utf-8") as fh:
+        payload = json.load(fh)
+except Exception:
+    sys.exit(1)
+for ace in payload.get("access_control_list", []):
+    if ace.get("service_principal_name") == spn:
+        perms = [p.get("permission_level") for p in ace.get("all_permissions", []) if p.get("permission_level")]
+        if "CAN_RUN" in perms:
+            sys.exit(0)
+sys.exit(1)
+PY
+      then
+        printf 'Service principal %s já possui CAN_RUN no space %s\n' "$SPN" "$SPACE"
+        exit 0
+      fi
 
-printf 'PATCH /api/2.0/permissions/genie/%s -> HTTP %s\n' "$SPACE" "$HTTP_CODE"
-head -c 400 "$TMP" || true; echo
+      # Monta o corpo do PATCH (sem depender de jq)
+      BODY=$(
+        printf '%s' '{"access_control_list":[{"service_principal_name":"'"$SPN"'","permission_level":"CAN_RUN"}]}'
+      )
 
-case "$HTTP_CODE" in 2??) exit 0 ;; *) exit 1 ;; esac
-EOF
+      HTTP_CODE=$(curl -sS -w '%%{http_code}' -o "$TMP" \
+        -X PATCH "$HOST/api/2.0/permissions/genie/$SPACE" \
+        -H "Authorization: Bearer $TOKEN" \
+        -H "Content-Type: application/json" \
+        -d "$BODY")
+
+      printf 'PATCH /api/2.0/permissions/genie/%s -> HTTP %s\n' "$SPACE" "$HTTP_CODE"
+      head -c 400 "$TMP" || true; echo
+
+      case "$HTTP_CODE" in
+        2??) exit 0 ;;
+        *)   exit 1 ;;
+      esac
+    EOT
+  }
+}
+
+# 3b) Grant CAN_USE on the configured SQL Warehouse (if provided)
+resource "databricks_permissions" "warehouse_can_use" {
+  count = var.databricks_sql_warehouse_id == null ? 0 : 1
+
+  sql_endpoint_id = var.databricks_sql_warehouse_id
+
+  access_control {
+    service_principal_name = databricks_service_principal.genie.application_id
+    permission_level       = "CAN_USE"
   }
 
   depends_on = [databricks_service_principal.genie]
 }
 
+# 3c) Grant catalog privileges (if provided)
+resource "databricks_grants" "catalog" {
+  count = var.databricks_catalog_name == null ? 0 : 1
+
+  catalog = var.databricks_catalog_name
+
+  grant {
+    principal  = databricks_service_principal.genie.application_id
+    privileges = ["USE_CATALOG"]
+  }
+
+  depends_on = [databricks_service_principal.genie]
+}
+
+# 3d) Grant schema privileges (if catalog & schema provided)
+resource "databricks_grants" "schema" {
+  count = var.databricks_catalog_name == null || var.databricks_schema_name == null ? 0 : 1
+
+  schema = "${var.databricks_catalog_name}.${var.databricks_schema_name}"
+
+  grant {
+    principal  = databricks_service_principal.genie.application_id
+    privileges = ["USE_SCHEMA", "SELECT", "EXECUTE", "READ_VOLUME"]
+  }
+
+  depends_on = [databricks_service_principal.genie, databricks_grants.catalog]
+}
 
 # 4) Exporta Client ID / Secret em arquivo local
 resource "null_resource" "secrets_dir_genie" {

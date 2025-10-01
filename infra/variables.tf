@@ -60,3 +60,27 @@ variable "databricks_token" {
   type        = string
   sensitive   = true
 }
+
+variable "databricks_oauth_scopes" {
+  description = "Escopos OAuth a solicitar para o service principal gerenciado pelo Databricks"
+  type        = list(string)
+  default     = ["all-apis", "sql", "offline_access"]
+}
+
+variable "databricks_sql_warehouse_id" {
+  description = "ID do SQL Warehouse que o Genie deve usar (ex.: 6a3f431e969b35e9)"
+  type        = string
+  default     = null
+}
+
+variable "databricks_catalog_name" {
+  description = "Catálogo que contém os dados do Genie (ex.: _databricks_demos)"
+  type        = string
+  default     = null
+}
+
+variable "databricks_schema_name" {
+  description = "Schema dentro do catálogo para o Genie (ex.: genie_data)"
+  type        = string
+  default     = null
+}

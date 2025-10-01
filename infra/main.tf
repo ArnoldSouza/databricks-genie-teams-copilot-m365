@@ -28,6 +28,7 @@ locals {
   env_path     = "${local.project_root}/.env"
 }
 
+
 # Para obter o tenant_id atual
 data "azurerm_client_config" "current" {}
 
@@ -213,8 +214,10 @@ resource "local_sensitive_file" "project_env" {
     client_secret = azuread_application_password.bot_secret.value
     tenant_id     = data.azurerm_client_config.current.tenant_id
 
-    databricks_space_id = var.databricks_space_id
-    databricks_host     = var.databricks_host
-    databricks_token    = var.databricks_token
+    databricks_space_id      = var.databricks_space_id
+    databricks_host          = var.databricks_host
+    databricks_client_id     = databricks_service_principal.genie.application_id
+    databricks_client_secret = databricks_service_principal_secret.genie_oauth.secret
+    databricks_oauth_scopes  = join(" ", var.databricks_oauth_scopes)
   })
 }

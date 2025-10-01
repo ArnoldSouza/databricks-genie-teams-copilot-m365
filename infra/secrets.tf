@@ -54,6 +54,28 @@ resource "azurerm_key_vault_secret" "databricks_host" {
   ]
 }
 
+resource "azurerm_key_vault_secret" "databricks_sp_client_id" {
+  name         = "databricks-sp-client-id"
+  value        = databricks_service_principal.genie.application_id
+  key_vault_id = azurerm_key_vault.kv.id
+
+  depends_on = [
+    azurerm_role_assignment.kv_officer_current,
+    databricks_service_principal.genie
+  ]
+}
+
+resource "azurerm_key_vault_secret" "databricks_sp_client_secret" {
+  name         = "databricks-sp-client-secret"
+  value        = databricks_service_principal_secret.genie_oauth.secret
+  key_vault_id = azurerm_key_vault.kv.id
+
+  depends_on = [
+    azurerm_role_assignment.kv_officer_current,
+    databricks_service_principal_secret.genie_oauth
+  ]
+}
+
 resource "azurerm_key_vault_secret" "databricks_token" {
   name         = "databricks-token"
   value        = var.databricks_token

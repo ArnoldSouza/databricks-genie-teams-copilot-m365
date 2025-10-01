@@ -10,7 +10,7 @@ import random
 import hashlib
 from dataclasses import dataclass, asdict
 from typing import Dict, Optional, Any, Tuple, List, Callable
-from datetime import datetime
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from dotenv import load_dotenv
@@ -33,6 +33,7 @@ from microsoft_agents.hosting.aiohttp import CloudAdapter
 
 # === Genie (Databricks) ===
 from databricks.sdk import WorkspaceClient
+from databricks.sdk.errors import OperationFailed
 from databricks.sdk.service.dashboards import GenieAPI
 
 # ------------------------------------------------------------------------------
@@ -63,11 +64,21 @@ AGENT_APP = AgentApplication[TurnState](
 
 # ------------------------------------------------------------------------------
 
+# DATABRICKS_HOST = os.getenv("DATABRICKS_HOST")
+# DATABRICKS_TOKEN = os.getenv("DATABRICKS_TOKEN")
+# DATABRICKS_SPACE_ID = os.getenv("DATABRICKS_SPACE_ID")
+
+# DBX_ENABLED = bool(DATABRICKS_HOST and DATABRICKS_TOKEN and DATABRICKS_SPACE_ID)
+
 DATABRICKS_HOST = os.getenv("DATABRICKS_HOST")
 DATABRICKS_TOKEN = os.getenv("DATABRICKS_TOKEN")
+DATABRICKS_CLIENT_ID = os.getenv("DATABRICKS_CLIENT_ID")
+DATABRICKS_CLIENT_SECRET = os.getenv("DATABRICKS_CLIENT_SECRET")
 DATABRICKS_SPACE_ID = os.getenv("DATABRICKS_SPACE_ID")
 
-DBX_ENABLED = bool(DATABRICKS_HOST and DATABRICKS_TOKEN and DATABRICKS_SPACE_ID)
+DBX_HAS_PAT = bool(DATABRICKS_TOKEN)
+DBX_HAS_OAUTH = bool(DATABRICKS_CLIENT_ID and DATABRICKS_CLIENT_SECRET)
+DBX_ENABLED = bool(DATABRICKS_HOST and DATABRICKS_SPACE_ID and (DBX_HAS_PAT or DBX_HAS_OAUTH))
 
 # Safety limits for Teams/Playground render (global hard caps)
 MAX_ROWS_DEFAULT = int(os.getenv("GENIE_MAX_ROWS", "50"))
@@ -223,15 +234,37 @@ class GenieBot:
         self._user_space: Dict[str, str] = {}  # per-user space override; default is env
         self._space_title_cache: Dict[str, str] = {}
 
+        # if DBX_ENABLED:
+        #     try:
+        #         self._workspace_client = WorkspaceClient(host=DATABRICKS_HOST, token=DATABRICKS_TOKEN)
+        #         self._genie_api = GenieAPI(self._workspace_client.api_client)
+        #         log_event(logging.INFO, "✅ genie_init_ok", host=bool(DATABRICKS_HOST), space=bool(DATABRICKS_SPACE_ID))
+        #     except Exception as e:
+        #         log_event(logging.ERROR, "⛔ genie_init_failed", error=str(e.__class__.__name__))
+        #         self._workspace_client = None
+        #         self._genie_api = None
+
         if DBX_ENABLED:
+            client_kwargs = {"host": DATABRICKS_HOST}
+
+            if DBX_HAS_PAT:
+                client_kwargs["token"] = DATABRICKS_TOKEN
+            else:
+                client_kwargs["client_id"] = DATABRICKS_CLIENT_ID
+                client_kwargs["client_secret"] = DATABRICKS_CLIENT_SECRET
+                client_kwargs["auth_type"] = "oauth-m2m"
+
+            self._workspace_client = WorkspaceClient(**client_kwargs)
+            self._genie_api = self._workspace_client.genie
+
             try:
-                self._workspace_client = WorkspaceClient(host=DATABRICKS_HOST, token=DATABRICKS_TOKEN)
-                self._genie_api = GenieAPI(self._workspace_client.api_client)
-                log_event(logging.INFO, "✅ genie_init_ok", host=bool(DATABRICKS_HOST), space=bool(DATABRICKS_SPACE_ID))
+                self._genie_api.list_spaces()
+                log_event(logging.INFO, "✅ genie_init_ok", auth="pat" if DBX_HAS_PAT else "oauth")
             except Exception as e:
-                log_event(logging.ERROR, "⛔ genie_init_failed", error=str(e.__class__.__name__))
+                log_event(logging.ERROR, "⛔ genie_init_failed", stage="genie_ping", error=str(e))
                 self._workspace_client = None
                 self._genie_api = None
+
 
     # -------------------- Space helpers --------------------
 
@@ -643,12 +676,87 @@ class GenieBot:
         assert self._genie_api is not None and self._workspace_client is not None
 
         # 1) Create/continue the conversation and wait
-        async def _create():
+        async def _create_waiter():
             if conversation_id is None:
-                return await asyncio.to_thread(self._genie_api.start_conversation_and_wait, space_id, question)
-            return await asyncio.to_thread(self._genie_api.create_message_and_wait, space_id, conversation_id, question)
+                return await asyncio.to_thread(self._genie_api.start_conversation, space_id, question)
+            return await asyncio.to_thread(self._genie_api.create_message, space_id, conversation_id, question)
 
-        initial_message = await self._with_retry(_create, retries=MAX_RETRIES, timeout=timeout_text)
+        waiter = await self._with_retry(_create_waiter, retries=MAX_RETRIES, timeout=timeout_text)
+        conversation_id = waiter.conversation_id
+        message_id = waiter.message_id
+
+        async def _failure_detail(fallback: str) -> str:
+            detail = fallback
+            try:
+                failed_message = await asyncio.to_thread(
+                    self._genie_api.get_message,
+                    space_id,
+                    conversation_id,
+                    message_id,
+                )
+                err_obj = getattr(failed_message, "error", None)
+                err_text = getattr(err_obj, "error", None) if err_obj else None
+                if err_text:
+                    detail = err_text
+            except Exception as fetch_err:
+                log_event(
+                    logging.WARNING,
+                    "genie_failure_detail_lookup_failed",
+                    space_id=space_id,
+                    conversation_id=conversation_id,
+                    message_id=message_id,
+                    error=str(fetch_err),
+                )
+            return detail
+
+        wait_timeout = max(5, timeout_text)
+        try:
+            initial_message = await asyncio.wait_for(
+                asyncio.to_thread(waiter.result, timeout=timedelta(seconds=wait_timeout)),
+                timeout=wait_timeout + 5,
+            )
+        except OperationFailed as op_err:
+            detail = await _failure_detail(str(op_err))
+            friendly = f"Genie couldn't complete the request: {detail}"
+            if DBX_HAS_OAUTH:
+                friendly += " Please verify that the Databricks service principal has access to the Genie space and underlying data."
+            log_event(
+                logging.ERROR,
+                "genie_conversation_failed",
+                space_id=space_id,
+                conversation_id=conversation_id,
+                message_id=message_id,
+                error=detail,
+            )
+            return json.dumps({"error": friendly}), conversation_id
+        except asyncio.TimeoutError:
+            friendly = (
+                "Genie timed out before completing the request. Try increasing your "
+                "`timeout` or `query_timeout` limits with `config timeout=120 query_timeout=300`."
+            )
+            log_event(
+                logging.ERROR,
+                "genie_conversation_timeout",
+                space_id=space_id,
+                conversation_id=conversation_id,
+                message_id=message_id,
+            )
+            return json.dumps({"error": friendly}), conversation_id
+        except Exception as wait_err:
+            detail = await _failure_detail(str(wait_err))
+            friendly = f"Genie couldn't complete the request: {detail}"
+            if DBX_HAS_OAUTH:
+                friendly += " Please verify that the Databricks service principal has access to the Genie space and underlying data."
+            log_event(
+                logging.ERROR,
+                "genie_conversation_wait_failed",
+                space_id=space_id,
+                conversation_id=conversation_id,
+                message_id=message_id,
+                error=str(wait_err),
+            )
+            return json.dumps({"error": friendly}), conversation_id
+
         conversation_id = initial_message.conversation_id
 
         # 2) Get the full message (attachments, status, etc.)
@@ -698,10 +806,30 @@ class GenieBot:
             )
 
         results = None
+        fetch_errors: List[str] = []
+
+        async def _safe_fetch_statement(stmt_id: str):
+            try:
+                return await _fetch_statement(stmt_id)
+            except Exception as stmt_err:
+                fetch_errors.append(f"{type(stmt_err).__name__}: {stmt_err}")
+                log_event(
+                    logging.WARNING,
+                    "genie_stmt_fetch_failed",
+                    space_id=space_id,
+                    statement_id=stmt_id,
+                    error=str(stmt_err),
+                )
+                return None
 
         if statement_id:
-            results = await _fetch_statement(statement_id)
-        else:
+            results = await _safe_fetch_statement(statement_id)
+
+        if results is None:
+            if not attachment_id:
+                details = fetch_errors[0] if fetch_errors else "missing attachment"
+                return json.dumps({"error": f"Query result unavailable ({details}). Please try again."}), conversation_id
+
             async def _get_qr():
                 return await asyncio.to_thread(
                     self._genie_api.get_message_attachment_query_result,
@@ -710,12 +838,27 @@ class GenieBot:
                     initial_message.id,
                     attachment_id,
                 )
-            qr = await self._with_retry(_get_qr, retries=MAX_RETRIES, timeout=timeout_query)
 
-            stmt_resp = getattr(qr, "statement_response", None)
-            if stmt_resp and getattr(stmt_resp, "statement_id", None):
-                results = await _fetch_statement(stmt_resp.statement_id)
-            else:
+            try:
+                qr = await self._with_retry(_get_qr, retries=MAX_RETRIES, timeout=timeout_query)
+            except Exception as qr_err:
+                fetch_errors.append(f"{type(qr_err).__name__}: {qr_err}")
+                log_event(
+                    logging.WARNING,
+                    "genie_attachment_fetch_failed",
+                    space_id=space_id,
+                    attachment_id=attachment_id,
+                    error=str(qr_err),
+                )
+                qr = None
+
+            stmt_resp = getattr(qr, "statement_response", None) if qr else None
+            stmt_from_qr = getattr(stmt_resp, "statement_id", None)
+
+            if stmt_from_qr:
+                results = await _safe_fetch_statement(stmt_from_qr)
+
+            if results is None:
                 async def _exec_qr():
                     return await asyncio.to_thread(
                         self._genie_api.execute_message_attachment_query,
@@ -724,11 +867,33 @@ class GenieBot:
                         initial_message.id,
                         attachment_id,
                     )
-                rerun = await self._with_retry(_exec_qr, retries=MAX_RETRIES, timeout=timeout_query)
+
+                try:
+                    rerun = await self._with_retry(_exec_qr, retries=MAX_RETRIES, timeout=timeout_query)
+                except Exception as rerun_err:
+                    fetch_errors.append(f"{type(rerun_err).__name__}: {rerun_err}")
+                    log_event(
+                        logging.ERROR,
+                        "genie_attachment_rerun_failed",
+                        space_id=space_id,
+                        attachment_id=attachment_id,
+                        error=str(rerun_err),
+                    )
+                    details = ", ".join(fetch_errors) if fetch_errors else "unknown error"
+                    return json.dumps({"error": f"Query result unavailable ({details}). Please try again."}), conversation_id
+
                 stmt_resp2 = getattr(rerun, "statement_response", None)
-                if not (stmt_resp2 and getattr(stmt_resp2, "statement_id", None)):
-                    return json.dumps({"error": "Query result unavailable or expired. Please try again."}), conversation_id
-                results = await _fetch_statement(stmt_resp2.statement_id)
+                stmt_from_rerun = getattr(stmt_resp2, "statement_id", None)
+
+                if not stmt_from_rerun:
+                    details = ", ".join(fetch_errors) if fetch_errors else "no statement id"
+                    return json.dumps({"error": f"Query result unavailable ({details}). Please try again."}), conversation_id
+
+                results = await _safe_fetch_statement(stmt_from_rerun)
+
+                if results is None:
+                    details = ", ".join(fetch_errors) if fetch_errors else "statement fetch failed"
+                    return json.dumps({"error": f"Query result unavailable ({details}). Please try again."}), conversation_id
 
         # Try to extract SQL text from the statement if not already found
         sql_from_stmt = None
@@ -1079,16 +1244,26 @@ async def on_message(context: TurnContext, _state: TurnState):
         except Exception as e:
             error_id = str(uuid.uuid4())[:8]
             dur_ms = int((time.time() - start_ts) * 1000)
-            log_event(logging.ERROR, "genie_error", user_id=user_id, correlation_id=corr_id, error=str(type(e).__name__), duration_ms=dur_ms, error_id=error_id)
+            log_event(
+                logging.ERROR,
+                "genie_error",
+                user_id=user_id,
+                correlation_id=corr_id,
+                error_class=type(e).__name__,
+                error_message=str(e),
+                duration_ms=dur_ms,
+                error_id=error_id,
+            )
             hint = (
                 "- Try fewer columns/rows: `config cols=10 rows=50`\n"
                 "- Increase timeouts: `config timeout=120 query_timeout=300`\n"
                 "- Ask a more specific question"
             )
             await context.send_activity(
-                f"⚠️ Sorry, I couldn't process that (error `{error_id}`).\n"
-                f"{hint}"
+                f"⚠️ Sorry, I couldn't process that (error `{error_id}`).\n{hint}"
             )
+
+
 
 @AGENT_APP.activity("event")
 async def on_event(context: TurnContext, _state: TurnState):
