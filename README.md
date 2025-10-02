@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-![Python](https://img.shields.io/badge/Python-3.x-blue)
+![Python](https://img.shields.io/badge/Python-3.13-blue)
 ![Terraform](https://img.shields.io/badge/Terraform-IaC-623CE4)
 ![Databricks](https://img.shields.io/badge/Databricks-Unity%20Catalog-orange)
 ![Project Type](https://img.shields.io/badge/type-solution-informational)
