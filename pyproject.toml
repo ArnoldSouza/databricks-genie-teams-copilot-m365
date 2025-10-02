@@ -1,0 +1,23 @@
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+# Enable pydocstyle (D) and some common correctness conventions
+select = ["D", "E", "F", "I"]
+ignore = ["D105", "D107"]  # allow missing docstrings for magic methods & __init__ in some cases
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.pyright]
+typeCheckingMode = "basic"
+reportMissingTypeStubs = false
+pythonVersion = "3.11"
