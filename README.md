@@ -6,5 +6,6 @@
 ![Terraform](https://img.shields.io/badge/Terraform-IaC-623CE4)
 ![Databricks](https://img.shields.io/badge/Databricks-Unity%20Catalog-orange)
 ![Project Type](https://img.shields.io/badge/type-solution-informational)
-![Last Updated](https://img.shields.io/badge/last--updated-2025-10-01-brightgreen)
+![Last Updated](https://img.shields.io/github/last-commit/ArnoldSouza/databricks-genie-teams-copilot-m365?label=last%20updated&color=brightgreen)
 <!-- badges: end -->
+
