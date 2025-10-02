@@ -1,0 +1,70 @@
+{
+  "$schema": "https://schemas.botframework.com/schemas/skills/v2.2/skill-manifest.json",
+  "$id": "GenieSkill",
+  "name": "Genie (Databricks) Skill",
+  "version": "1.0.0",
+  "description": "Runs a free-form prompt against Genie (Databricks) and returns a text result.",
+  "publisherName": "Arnold Souza, arnoldporto@gmail.com, https://www.linkedin.com/in/arnoldsouza/",
+  "privacyUrl": "https://${hostname}/public/teams-privacy-policy.html",
+  "iconUrl": "https://${hostname}/public/icon.png",
+  "endpoints": [
+    {
+      "name": "default",
+      "protocol": "BotFrameworkV3",
+      "description": "Default endpoint",
+      "endpointUrl": "https://${hostname}/api/messages",
+      "msAppId": "${app_id}"
+    }
+  ],
+  "activities": {
+    "message": {
+      "type": "message",
+      "description": "Free-form conversation (echo/Genie)."
+    },
+    "runPrompt": {
+      "type": "event",
+      "name": "RunPrompt",
+      "description": "Execute a prompt and return a text response.",
+      "value": { "$ref": "#/definitions/RunPromptInput" },
+      "resultValue": { "$ref": "#/definitions/RunPromptResult" }
+    }
+  },
+  "definitions": {
+    "RunPromptInput": {
+      "title": "RunPromptInput",
+      "type": "object",
+      "properties": {
+        "prompt": {
+          "type": "string",
+          "description": "User prompt to be executed by Genie."
+        }
+      }
+    },
+    "RunPromptResult": {
+      "title": "RunPromptResult",
+      "type": "object",
+      "properties": {
+        "response": {
+          "type": "string",
+          "description": "The textual result produced by Genie."
+        },
+        "status": {
+          "type": "string",
+          "description": "Operation status. Optional values: ok, error."
+        },
+        "error": {
+          "type": "string",
+          "description": "Only present if status is 'error'."
+        },
+        "traceId": {
+          "type": "string",
+          "description": "Correlation ID for diagnostics."
+        },
+        "elapsedMs": {
+          "type": "number",
+          "description": "Elapsed time in milliseconds."
+        }
+      }
+    }
+  }
+}

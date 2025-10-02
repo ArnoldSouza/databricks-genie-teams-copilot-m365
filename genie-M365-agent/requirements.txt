@@ -1,0 +1,16 @@
+# --- Core async HTTP ---
+aiohttp==3.12.15
+
+# --- Microsoft Agents / MSAL integration ---
+microsoft-agents-activity==0.3.2
+microsoft-agents-authentication-msal==0.3.2
+microsoft-agents-hosting-aiohttp==0.3.2
+microsoft-agents-hosting-core==0.3.2
+msal==1.33.0
+PyJWT==2.10.1
+
+# --- Databricks SDK ---
+databricks-sdk==0.67.0
+
+# --- Config (.env) ---
+python-dotenv==1.1.1
