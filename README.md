@@ -19,16 +19,16 @@ This solution **surfaces Databricks Genie inside Microsoft Teams** and optionall
 
 Check some screeshots: 
 - MS Teams – Welcome message: 
-<img src="docs/images/01-welcome.png" alt="Welcome" width="300"/>
+<img src="docs/images/01-welcome.png" alt="Welcome" width="450"/>
 
 - MS Teams – Querying tabular data:
-<img src="docs/images/02-querying-data.png" alt="Querying tabular data" width="300"/>
+<img src="docs/images/02-querying-data.png" alt="Querying tabular data" width="450"/>
 
 - MS Teams – Help menu:
-<img src="docs/images/03-help.png" alt="Help menu" width="300"/>
+<img src="docs/images/03-help.png" alt="Help menu" width="450"/>
 
 - MS Copilot Studio – Consuming Genie as a Skill:  
-<img src="docs/images/04-copilot-features.png" alt="Copilot features" width="300"/>
+<img src="docs/images/04-copilot-features.png" alt="Copilot features" width="450"/>
 
 **Why this is useful**
 
