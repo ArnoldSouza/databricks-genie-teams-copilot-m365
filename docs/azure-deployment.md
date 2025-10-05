@@ -29,28 +29,12 @@ terraform plan -out plan.tfplan
 terraform apply "plan.tfplan"
 ```
 
+<img src="images/07-terraform.png" alt="Welcome" width="450"/>
+
+
 **Outputs** include app URL, managed identity IDs, Key Vault URIs, and bot IDs. Save them for later steps.
 
 > ⚠️ Attention: The terraform generates the folder `genie-M365-agent\infra\secrets`. Never commit this folder. The content is to help user to get acces to sensitive info after deployment. 
-
----
-
-### Animated walkthroughs (GIF placeholders)
-
-1. **Terraform init/validate/plan/apply**  
-   ![GIF – Terraform init/plan/apply](gifs/auto-deploy-01-terraform.gif)
-
-2. **Review Terraform outputs**  
-   ![GIF – Review outputs](gifs/auto-deploy-02-outputs.gif)
-
-3. **Web App deploy with Azure CLI**  
-   ![GIF – az webapp up](gifs/auto-deploy-03-az-webapp-up.gif)
-
-4. **Teams package upload/publish**  
-   ![GIF – Upload Teams package](gifs/auto-deploy-04-teams-upload.gif)
-
-
----
 
 ## Terraform Technical Information
 ### Details about Terraform Variables (input)
@@ -74,7 +58,6 @@ terraform apply "plan.tfplan"
 | string   | `databricks_catalog_name`  | `"_databricks_demos"`                                                                   | Target catalog in Unity Catalog where Genie data lives.                               |
 | string   | `databricks_schema_name`   | `"genie_data"`                                                                          | Target schema in Unity Catalog where Genie data lives.                                |
 | list     | `databricks_oauth_scopes`  | `["all-apis", "sql", "offline_access"]`                                                 | OAuth scopes granted to the Databricks service principal. Leave this as default value.  |
-
 
 ### Inventory — Resources, Permissions, and Objects (Generated from TF)
 
@@ -135,4 +118,3 @@ terraform apply "plan.tfplan"
 ### Conditional Behavior Summary
 - Genie **CAN_RUN** is always attempted (requires PAT & space permissions).
 
----
