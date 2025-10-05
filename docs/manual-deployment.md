@@ -39,8 +39,6 @@ sequenceDiagram
 
 ```
 
----
-
 ## 0) Prerequisites
 
 - Azure subscription with **Owner** or equivalent rights to create RG, KV, Web App, Bot Service, and AAD apps.
@@ -52,8 +50,6 @@ sequenceDiagram
 
 > Replace all placeholders like `<SUB_ID>`, `<RG>`, `<LOCATION>`, `<APP_NAME>`, `<BOT_NAME>`, `<KV>`, `<DBX_HOST>`, `<SPACE_ID>`, `<DBX_SP_APPID>`, etc.
 
----
-
 ## 1) Azure Resource Group
 
 **Portal:** Azure Portal → Resource groups → Create → Name `<RG>` in `<LOCATION>`.
@@ -62,8 +58,6 @@ sequenceDiagram
 ```bash
 az group create -n <RG> -l <LOCATION>
 ```
-
----
 
 ## 2) Azure Key Vault (RBAC mode)
 
@@ -86,8 +80,6 @@ KV_ID=$(az keyvault show -n <KV> -g <RG> --query id -o tsv)
 ME_OID=$(az ad signed-in-user show --query id -o tsv)
 az role assignment create --assignee $ME_OID --role "Key Vault Secrets Officer" --scope $KV_ID
 ```
-
----
 
 ## 3) App Service Plan (Linux) + Web App (Python 3.13)
 
@@ -113,8 +105,6 @@ az webapp config set -g <RG> -n <APP_NAME> \
 
 > After deployment, your **bot messaging endpoint** will be:  
 > `https://<APP_NAME>.azurewebsites.net/api/messages` (or use the actual default hostname returned by Azure).
-
----
 
 ## 4) Azure AD Application (App Registration) + Service Principal + Client Secret
 
@@ -144,8 +134,6 @@ echo "Tenant ID: $TENANT_ID"
 
 > Optional: set yourself as **Owner** of the app (Portal: App → Owners).
 
----
-
 ## 5) Azure Bot Service (single-tenant) + Teams channel
 
 **Portal:** Create a **Bot Channels Registration** (Azure Bot) in `<RG>` / `<LOCATION>`  
@@ -171,8 +159,6 @@ az bot create --kind webapp \
 # Enable Teams channel
 az bot msteams create --name <BOT_NAME> --resource-group <RG>
 ```
-
----
 
 ## 6) Store base secrets in Key Vault
 
@@ -202,8 +188,6 @@ az keyvault secret set --vault-name <KV> --name databricks-space-id    --value "
 # az keyvault secret set --vault-name <KV> --name databricks-sp-client-secret --value "<DBX_SP_SECRET>"
 ```
 
----
-
 ## 7) Databricks — Service Principal + OAuth Secret
 
 **UI (Workspace):**  
@@ -231,8 +215,6 @@ curl -X POST "$DBX_HOST/api/2.0/oauth-service-principal-secrets/$DBX_SP_APPID" \
 ```
 
 **Back to Key Vault:** store `databricks-sp-client-id` and `databricks-sp-client-secret` from above (see step 6).
-
----
 
 ## 8) Web App → Key Vault references (App Settings)
 
@@ -267,8 +249,6 @@ az webapp config appsettings set -g <RG> -n <APP_NAME> --settings \
 
 > After saving, App Service resolves references using its managed identity.
 
----
-
 ## 9) Databricks — Grant **CAN_RUN** on Genie Space (required)
 
 Use a Databricks **PAT** with permissions to manage space ACLs. The workspace API path used by the Terraform project is:
@@ -295,9 +275,7 @@ curl -sS -X PATCH "$DBX_HOST/api/2.0/permissions/genie/$SPACE_ID" \
   -d '{"access_control_list":[{"service_principal_name":"'"$DBX_SP_APPID"'","permission_level":"CAN_RUN"}]}'
 ```
 
----
-
-## 10) (Optional) Databricks — Catalog/Schema grants
+## 10) Databricks — Catalog/Schema grants
 
 **UI:** Data → Catalogs → `<CATALOG>` → Permissions → grant to principal **service-principal `<DBX_SP_APPID>`**:  
 - `USE_CATALOG` on catalog  
@@ -311,9 +289,7 @@ GRANT USE SCHEMA, SELECT, EXECUTE, READ_VOLUME ON SCHEMA <CATALOG>.<SCHEMA>
   TO `service-principal://<DBX_SP_APPID>`;
 ```
 
----
-
-## 11) (Optional) Databricks — SQL Warehouse permission
+## 11) Databricks — SQL Warehouse permission
 
 **UI:** SQL Warehouses → select `<WAREHOUSE_ID>` → Permissions → Add principal (service principal) → **Can Use**.
 
@@ -324,8 +300,6 @@ curl -sS -X PATCH "$DBX_HOST/api/2.0/permissions/sql/warehouses/<WAREHOUSE_ID>" 
   -d '{"access_control_list":[{"service_principal_name":"'"$DBX_SP_APPID"'","permission_level":"CAN_USE"}]}'
 ```
 
----
-
 ## 12) Teams App package (upload custom app)
 
 Create a Teams app package (ZIP) with your **manifest.json** and icons (**color** 192×192, **outline** 32×32). The Terraform project templates (`ms_teams_manifest.tftpl`) can be adapted:
@@ -335,15 +309,11 @@ Create a Teams app package (ZIP) with your **manifest.json** and icons (**color*
 
 **Upload:** Teams → Apps → **Upload a custom app** (or Teams Admin Center for org-wide deployment).
 
----
-
 ## 13) Smoke test
 
 - Open the bot in Teams and send a prompt.
 - Check App Service logs: **Log stream** in Portal, or `az webapp log tail -g <RG> -n <APP_NAME>`.
 - If needed, test locally via Bot Framework Emulator against the `/api/messages` endpoint.
-
----
 
 ## 14) Troubleshooting tips
 
@@ -351,43 +321,9 @@ Create a Teams app package (ZIP) with your **manifest.json** and icons (**color*
 - **Key Vault reference not resolving**: ensure Web App **Managed Identity** has **Key Vault Secrets User** on your vault and that app settings use the exact `@Microsoft.KeyVault(SecretUri=...)` form.
 - **Bot not responding in Teams**: verify Bot Service **Messaging endpoint** is reachable (no auth errors), and the Teams channel is **Enabled**.
 
----
-
 ## ✅ Summary of Created Objects (Manual)
 
 - **Azure**: Resource Group, App Service Plan (Linux), App Service (Python 3.13, Managed Identity), Key Vault (RBAC), RBAC roles (Secrets Officer to you, Secrets User to Web App MI), Azure AD App + SP + Secret, Azure Bot (single-tenant) + Teams channel.
 - **Key Vault Secrets**: `svc-conn-clientid`, `svc-conn-clientsecret`, `svc-conn-tenantid`, `databricks-host`, `databricks-space-id`, `databricks-sp-client-id`, `databricks-sp-client-secret`, `(optional) databricks-token`.
 - **Databricks**: Workspace Service Principal + OAuth secret; Genie Space **CAN_RUN** grant; (optional) Catalog/Schema grants; (optional) SQL Warehouse **CAN_USE**.
 - **Teams**: Custom app package uploaded referencing your bot/app ID and web endpoint.
-
----
-
-**End of document.**
-
-
-
-## Step-by-step GIFs (placeholders)
-
-1. **Create Resource Group & Plan**  
-   ![GIF – RG & Plan](gifs/manual-01-rg-plan.gif)
-
-2. **Create Web App (Python) + enable Managed Identity**  
-   ![GIF – Web App + MI](gifs/manual-02-webapp-mi.gif)
-
-3. **Create Key Vault & grant MI**  
-   ![GIF – Key Vault + Access Policy](gifs/manual-03-keyvault-access.gif)
-
-4. **Create App Registration (if applicable)**  
-   ![GIF – Entra App Registration](gifs/manual-04-app-reg.gif)
-
-5. **Databricks SP & UC permissions**  
-   ![GIF – Databricks SP + UC](gifs/manual-05-dbx-sp-uc.gif)
-
-6. **Create Azure Bot & connect endpoint**  
-   ![GIF – Azure Bot](gifs/manual-06-azure-bot.gif)
-
-7. **Deploy code to Web App**  
-   ![GIF – Deploy code](gifs/manual-07-deploy-code.gif)
-
-8. **Upload Teams package**  
-   ![GIF – Teams upload](gifs/manual-08-teams-upload.gif)

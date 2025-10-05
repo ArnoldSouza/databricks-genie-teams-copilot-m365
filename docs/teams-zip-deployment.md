@@ -3,15 +3,11 @@
 
 This guide shows **how end-users, testers, and admins can install and use the bot inside Microsoft Teams**—from first sign-in to asking questions and sharing answers with your team.
 
----
-
 ## TL;DR (Quick Cheat-Sheet)
 - **Install**: Upload the ZIP (`ms_teams/app_package/dbx-genie-m365-app.zip`) or install from your org catalog.
 - **Open**: In Teams, search for the app name → **Open** → **Pin** for quick access.
 - **Ask**: Type a plain-English question (e.g., *“Show me the list of tables you have”*).
 - **Stuck?** Type `help` or see **Troubleshooting** below.
-
----
 
 ## 1) What you need (Prerequisites)
 - You can **install custom apps** (sideload) OR your admin has **published** the app to the **Org catalog**.
@@ -20,24 +16,29 @@ This guide shows **how end-users, testers, and admins can install and use the bo
 > **Note**  
 > If you see *“Access denied / not authorized”*, you likely need access to the underlying data or workspace. See **Troubleshooting**.
 
----
-
 ## 2) Install options (Admins & Testers)
 
 ### Option A — Sideload for testing (developer tenants)
+
+<img src="images/12-deploy-teams-1.png" alt="Deploy Teams" width="450"/>
+
 1. In Teams (desktop or web), go to **Apps** → **Manage your apps**.
 2. Click **Upload an app** → **Upload a custom app**.
 3. Select `ms_teams/app_package/dbx-genie-m365-app.zip`.
 4. Follow the prompts to install.
 
 ### Option B — Publish to the organizational catalog
+
+<img src="images/13-deploy-teams-2.png" alt="Deploy Teams" width="450"/>
+
 1. Submit the ZIP to your **Teams app catalog** following your tenant’s process.
 2. End users will find it in **Apps** → **Built for your org**.
 
 ### Option C — Quick preview via Azure Bot
-- In **Azure Portal** → your **Bot resource** → **Channels** → **Open in Teams**.
 
----
+<img src="images/14-deploy-teams-3.png" alt="Deploy Teams" width="450"/>
+
+- In **Azure Portal** → your **Bot resource** → **Channels** → **Open in Teams**.
 
 ## 3) Use in a 1:1 chat (Personal scope)
 Use the bot like a chat assistant:
@@ -57,8 +58,6 @@ Use the bot like a chat assistant:
 > **Pro-tip**  
 > Keep prompts **specific**. Add filters/timeframes, e.g., “by region”, “top 5”, “from Jan–Jun 2025”.
 
----
-
 ## 4) Use in a Team/Channel (Collaboration)
 1. Add the app to your **Team** (administrator/member with permissions).
 2. In a channel, **@mention the bot** and ask your question:
@@ -76,33 +75,13 @@ Use the bot like a chat assistant:
 | “Access denied” / “Not authorized” | You don’t have access to required data/workspace | Request access to the Databricks objects/Unity Catalog; share error details with your admin |
 | Empty or vague answers | Prompt too broad | Add timeframe, fields, filters, and desired output shape (table vs summary) |
 
----
-
 ## 6) Privacy & security notes
 - The bot uses **Microsoft Entra** and honors your **RBAC** and **data permissions**.
 - Questions and responses may be logged for **auditing, support, and product improvement** (per your org policy).
 - Never paste secrets or personal data into prompts.
 
----
-
 ## 7) Uninstall / Reinstall
 - **Personal**: In **Apps** → **Manage your apps** → find the app → **More** → **Uninstall**.  
 - **Team**: In the Team’s **Manage apps**, remove the app (requires proper permissions).  
 - Reinstall from **Org catalog** or **Upload a custom app** as needed.
-
----
-
-## 8) GIFs (placeholders)
-
-1. **Sideload app (developer flow)**  
-   ![GIF – Sideload](gifs/teams-01-sideload.gif)
-
-2. **Organization catalog publish**  
-   ![GIF – Org catalog](gifs/teams-02-org-catalog.gif)
-
-3. **Preview via Azure Bot channels**  
-   ![GIF – Open in Teams](gifs/teams-03-open-in-teams.gif)
-
-4. **Developer portal preview**  
-   ![GIF – Dev portal preview](gifs/teams-04-dev-portal.gif)
 

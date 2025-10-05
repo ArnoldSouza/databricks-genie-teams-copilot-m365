@@ -29,7 +29,7 @@ terraform plan -out plan.tfplan
 terraform apply "plan.tfplan"
 ```
 
-<img src="images/07-terraform.png" alt="Welcome" width="450"/>
+<img src="images/07-terraform.png" alt="Terraform Init" width="450"/>
 
 
 **Outputs** include app URL, managed identity IDs, Key Vault URIs, and bot IDs. Save them for later steps.

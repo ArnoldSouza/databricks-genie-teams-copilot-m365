@@ -16,6 +16,14 @@ Run it in one CLI:
 python3 -m aiohttp.web -H 0.0.0.0 -P 8000 src.main:create_app
 ```
 
+Everything should be good if you see `✅ genie_init_ok` in the output. 
+
+```
+INFO:databricks-genie-teams-1.4.1:{"event": "✅ genie_init_ok", "v": "databricks-genie-teams-1.4.1", "auth": "oauth"}
+```
+
+<img src="images/08-aiohttpserver.png" alt="Welcome" width="450"/>
+
 ### Option A — Test with Agents Playground
 
 Using another CLI, run:
@@ -27,6 +35,9 @@ agentsplayground \
   --client-secret "<CLIENT_SECRET>" \
   --tenant-id "<TENANT_ID>"
 ```
+The Agents Playground is going to open a new tab with the Teams emulator. Now it's time to test/develop. 
+
+<img src="images/09-agents-playground.png" alt="Welcome" width="600"/>
 
 ### Option B — Expose locally with Dev Tunnels
 
@@ -37,8 +48,6 @@ devtunnel host -a -p 3978
 - Update your **Bot** message endpoint to: `https://<your-dev-tunnel>/api/messages`
 - Update your **App Registration** Home Page URL to: `https://<your-dev-tunnel>`
 - **Revert** both to your production App Service URL before going live.
-
----
 
 ## Deploy application code to Azure (quick path)
 
@@ -55,18 +64,8 @@ az webapp up \
     --runtime "PYTHON:3.13"
 ```
 
----
+The expected result is to have the message confirmation of the deployment, like the one below:
 
-### Walkthrough GIFs (placeholders)
 
-1. **Create venv & install requirements**  
-   ![GIF – venv + pip](gifs/env-01-venv-pip.gif)
+<img src="images/10-deploy-azure.png" alt="Welcome" width="450"/>
 
-2. **Run aiohttp app locally**  
-   ![GIF – run app](gifs/env-02-run-app.gif)
-
-3. **Agents Playground test**  
-   ![GIF – Agents Playground](gifs/env-03-agents-playground.gif)
-
-4. **Dev Tunnels exposure**  
-   ![GIF – Dev Tunnel](gifs/env-04-devtunnel.gif)
