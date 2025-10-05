@@ -17,6 +17,18 @@
 
 This solution **surfaces Databricks Genie inside Microsoft Teams** and optionally exposes it in **Copilot Studio** as a **skill**. Genie lets people ask **natural‑language questions** over tabular data and returns **interpretable answers** (with optional SQL). By meeting users in **Teams**, adoption increases while access stays **RBAC‑aligned** through Microsoft Entra and Unity Catalog.
 
+MS Teams - Welcome message:
+![Welcome](docs/images/01-welcome-help.png)
+
+MS Teams - Querying tabular data:
+![Quering tabular data](docs/images/02-querying-data.png)
+
+MS Teams - Help menu:
+![Help menu](docs/images/03-help.png)
+
+MS Copilot Studio - Consuming Genie as a Skill:
+![Help menu](docs/images/04-copilot-features.png)
+
 **Why this is useful**
 
 - **Familiar UX:** a Teams chat surface business users already know.
@@ -32,8 +44,6 @@ Contact: <arnoldporto@gmail.com> · <https://www.linkedin.com/in/arnoldsouza/>
 
 > Built as a contribution on top of the work by **Luiz Carrossoni** and **Ryan Bates** (see upstream [here](https://github.com/carrossoni/DatabricksGenieBOT/tree/main) and [here](https://medium.com/@ryan-bates/microsoft-teams-meets-databricks-genie-api-a-complete-setup-guide-81f629ace634)).
 
----
-
 ## What’s new vs. upstream
 
 - Framework modernization: Migrated from **Azure Bot Framework SDK** → **Microsoft 365 Agents SDK**.
@@ -48,8 +58,6 @@ Contact: <arnoldporto@gmail.com> · <https://www.linkedin.com/in/arnoldsouza/>
 > **References:**  
 > • Databricks Genie overview and setup (official docs) — see [reference](https://learn.microsoft.com/azure/databricks/genie/set-up)  
 > • Microsoft 365 Agents SDK docs — see [reference](https://github.com/Microsoft/Agents-for-python)
-
----
 
 ## Quick start path
 
@@ -124,8 +132,6 @@ sequenceDiagram
 
 ```
 
----
-
 ## Documentation index
 
 - [1. Prepare Databricks (Data + Genie space)](docs/databricks-predeploy.md)
@@ -136,8 +142,6 @@ sequenceDiagram
 - [6. Optional - Expose Genie as a Copilot Studio skill](docs/copilot-skill.md)
 - [Info for Nerds — Architecture & Engineering Deep-Dive](docs/info-for-nerds.md)
 
----
-
 ## Technical deep-dive
 
 Read the full article about:
@@ -147,27 +151,6 @@ Read the full article about:
 
 You can access detailed information here: 
   - [Info for Nerds — Architecture & Engineering Deep-Dive](docs/info-for-nerds.md)
-
----
-
-## 🖼️ Feature gallery (placeholders)
-
-Save screenshots to **`docs/images/`** with these names.
-
-| Feature | Screenshot | GIF (optional) |
-|---|---|---|
-| Welcome & Help menus | ![Welcome and Help](docs/images/01-welcome-help.png) | ![GIF – Welcome](docs/gifs/feature-01-welcome-help.gif) |
-| Config & Reset | ![Config and Reset](docs/images/02-config-reset.png) | ![GIF – Config & Reset](docs/gifs/feature-02-config-reset.gif) |
-| Genie Q&A in Teams | ![Genie Q&A in Teams](docs/images/03-genie-qa-teams.png) | ![GIF – Q&A](docs/gifs/feature-03-genie-qa-teams.gif) |
-| Smart tables (SQL + truncate) | ![Smart tables](docs/images/04-smart-tables-sql-limit.png) | ![GIF – Smart tables](docs/gifs/feature-04-smart-tables.gif) |
-| List & switch Spaces | ![Spaces switch](docs/images/05-list-switch-spaces.png) | ![GIF – Switch spaces](docs/gifs/feature-05-switch-spaces.gif) |
-| List & switch conversations | ![Conversations switch](docs/images/06-list-switch-conversations.png) | ![GIF – Switch conversations](docs/gifs/feature-06-switch-conversations.gif) |
-| Copilot Advanced Skill (5 outputs) | ![Copilot skill](docs/images/07-copilot-advanced-skill.png) | ![GIF – Copilot skill](docs/gifs/feature-07-copilot-advanced-skill.gif) |
-| Terraform apply (Azure) | ![Terraform apply](docs/images/08-terraform-apply.png) | ![GIF – Terraform apply](docs/gifs/feature-08-terraform-apply.gif) |
-
-> Tip: Prefer 1280×720 (or similar) for consistent display.
-
----
 
 ## Compatibility matrix
 
@@ -182,8 +165,6 @@ Save screenshots to **`docs/images/`** with these names.
 
 ℹ️ Pin versions for reproducibility. Runtime libraries are pinned in `genie-M365-agent/requirements.txt`.  
 ⚠️ IaC/CLI steps assume **macOS, Linux, or WSL** (pure Windows not supported).
-
----
 
 ## Security & secrets
 
@@ -211,24 +192,20 @@ Future known implementations that can elevate the project.
 - **Config:** `AAD_TENANT_ID`, `AAD_CLIENT_ID`, `AAD_CLIENT_SECRET` (or cert), `OBO_SCOPES_DBX`.
 - **Done when:** Users only see data they’re entitled to in Unity Catalog; non-entitled users receive a clear auth error.
 
----
 
-## 📽️ Images & GIFs – placeholders
+## Disclaimer
 
-> Put your media files under `docs/images/` (PNG) and `docs/gifs/` (GIF). Keep GIFs short (≤20s), 1280×720 if possible.
+> [!IMPORTANT]
+> This project implements an **experimental** chatbot that interacts with Databricks’ **Genie API**, which is **currently in Private Preview** and **not officially supported**. Interfaces, behaviors, and availability may change or break without notice. There is **no official support** from Databricks or Microsoft for this integration.
 
-### Recommended naming (you can keep these or rename)
-- `docs/images/hero-readme.png` — README hero banner
-- `docs/gifs/feature-01-welcome-help.gif` — Welcome/Help interaction
-- `docs/gifs/feature-02-config-reset.gif` — Config & reset
-- `docs/gifs/feature-03-genie-qa-teams.gif` — Q&A in Teams
-- `docs/gifs/feature-04-smart-tables.gif` — Smart tables with SQL
-- `docs/gifs/feature-05-switch-spaces.gif` — List/switch spaces
-- `docs/gifs/feature-06-switch-conversations.gif` — List/switch conversations
-- `docs/gifs/feature-07-copilot-advanced-skill.gif` — Copilot skill call
-- `docs/gifs/feature-08-terraform-apply.gif` — Terraform flow
+> [!WARNING]
+> **Do not use in production** without your own security, compliance, and data-governance reviews. You are responsible for protecting credentials, secrets, and any data accessed through this bot.
 
-**Pro tips**
-- Prefer 1280×720 or 1440×900.
-- Keep GIFs ≤ 10–20s and < 8MB (optimize with tools of your choice).
-- Use descriptive alt text (e.g., “GIF – Switch spaces in Teams”).
+> [!NOTE]
+> This notice will be updated if the Genie API’s support/preview status changes.
+
+**Scope:** The bot is designed to facilitate conversations with Genie—Databricks’ AI assistant—through chat interfaces such as **Microsoft Teams** (and optionally **Copilot Studio**).
+
+**Affiliation:** This repository is **community-driven** and **not affiliated with or endorsed by Databricks or Microsoft**.
+
+**License:** Provided “as is” under the **MIT License**. See `LICENSE` for details.
