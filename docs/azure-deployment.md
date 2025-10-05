@@ -10,13 +10,13 @@ Provision the Azure footprint for the bot using **Terraform**.
 - Azure CLI 2.77.0 authenticated (`az login`)
 - Python 3.13.7.
 
-> ⚠️ Attention: This procedure is not compatible with Windows, only Unix OS (mac OS/Linux/WSL - Windows Subsystem for Linux)
+> ⚠️ Attention: This procedure is not compatible with Windows, only with Unix OS (mac OS/Linux/WSL - Windows Subsystem for Linux)
 
 ## Steps
 
 Move to `infra` folder, change values in `terraform.tfvars`, execute terraform project.
 
-The `terraform.tfvars` file should have the values mentioned in [this section](###-details-about-terraform-variables).
+The `terraform.tfvars` file should have the values mentioned in [this section](####details-about-terraform-variables-input).
 
 Once variables are filled, then execute the CLI:
 ```bash

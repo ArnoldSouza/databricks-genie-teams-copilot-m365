@@ -48,7 +48,7 @@ Contact: <arnoldporto@gmail.com> · <https://www.linkedin.com/in/arnoldsouza/>
   - Commands to list/switch **Genie spaces** and **conversations**.
 
 > **References:**  
-> • Databricks Genie overview and setup (official docs) — see [reference](https://learn.microsoft.com/azure/databricks/genie/set-up)
+> • Databricks Genie overview and setup (official docs) — see [reference](https://learn.microsoft.com/azure/databricks/genie/set-up)  
 > • Microsoft 365 Agents SDK docs — see [reference](https://github.com/Microsoft/Agents-for-python)
 
 ---
