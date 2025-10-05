@@ -17,17 +17,18 @@
 
 This solution **surfaces Databricks Genie inside Microsoft Teams** and optionally exposes it in **Copilot Studio** as a **skill**. Genie lets people ask **natural‑language questions** over tabular data and returns **interpretable answers** (with optional SQL). By meeting users in **Teams**, adoption increases while access stays **RBAC‑aligned** through Microsoft Entra and Unity Catalog.
 
-MS Teams - Welcome message:
-![Welcome](docs/images/01-welcome-help.png)
+Check some screeshots: 
+- MS Teams – Welcome message: 
+<img src="docs/images/01-welcome.png" alt="Welcome" width="300"/>
 
-MS Teams - Querying tabular data:
-![Quering tabular data](docs/images/02-querying-data.png)
+- MS Teams – Querying tabular data:
+<img src="docs/images/02-querying-data.png" alt="Querying tabular data" width="300"/>
 
-MS Teams - Help menu:
-![Help menu](docs/images/03-help.png)
+- MS Teams – Help menu:
+<img src="docs/images/03-help.png" alt="Help menu" width="300"/>
 
-MS Copilot Studio - Consuming Genie as a Skill:
-![Help menu](docs/images/04-copilot-features.png)
+- MS Copilot Studio – Consuming Genie as a Skill:  
+<img src="docs/images/04-copilot-features.png" alt="Copilot features" width="300"/>
 
 **Why this is useful**
 
