@@ -16,7 +16,7 @@ Provision the Azure footprint for the bot using **Terraform**.
 
 Move to `infra` folder, change values in `terraform.tfvars`, execute terraform project.
 
-The `terraform.tfvars` file should have the values mentioned in [this section](####details-about-terraform-variables-input).
+The `terraform.tfvars` file should have the values mentioned in [this section](#details-about-terraform-variables-input).
 
 Once variables are filled, then execute the CLI:
 ```bash
