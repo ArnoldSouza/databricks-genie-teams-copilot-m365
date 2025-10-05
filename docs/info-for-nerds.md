@@ -1,79 +1,80 @@
 # Info for Nerds — Architecture & Engineering Deep‑Dive
 
-> This appendix pulls the detailed, low‑level content out of the main README: **🏗️ Architecture**, **🔄 Runtime message flow**, and **Detailed bot engineering**. It complements the quick start and user‑facing docs.
-
 ---
 
-## 🏗️ Architecture (infra & privileges)
+## 🏗️ Architecture
 
 ### High‑level components
-- **Azure**: Resource Group, **Key Vault (RBAC)**, **Linux App Service Plan**, **Web App (aiohttp Python bot, System‑assigned MI)**, **Azure Bot Service** (Teams channel).  
-- **Databricks**: **Service Principal** (workspace), OAuth **client secret**, **Genie Space** (room), optional **Unity Catalog** grants (**catalog/schema**) and **SQL Warehouse** permission.  
-- **Identity & secrets**:  
-  - Runtime **does not use PATs**; it uses **OAuth client‑credentials** with scopes (e.g., `all-apis`, `sql`, `offline_access`).  
-  - Web App reads **App Settings** that are **Key Vault references** (`@Microsoft.KeyVault(SecretUri=...)`), resolved by the platform via Managed Identity.  
+- **Azure:** Resource Group, Key Vault (RBAC), Linux App Service Plan, Web App (aiohttp Python bot, System‑assigned MI), Azure Bot Service (Teams channel).  
+- **Databricks:** Service Principal (workspace), OAuth client secret, Genie Space (room), Unity Catalog grants (catalog/schema) and SQL Warehouse permission.  
+- **Identity & secrets:**
+  - Runtime uses OAuth client‑credentials with scopes (e.g., `all-apis`, `sql`, `offline_access`).  
+  - Web App reads App Settings that are Key Vault references (`@Microsoft.KeyVault(SecretUri=...)`), resolved by the platform via Managed Identity.  
 
 ### Architecture diagram
+
+The cloud resources the solution interact, automated by terraform:
+
 ```mermaid
 flowchart TB
-  %% --- Azure ---
   subgraph Azure
-    RG["(Resource Group)"]
-    KV["Key Vault (RBAC)"]
-    ASP["App Service Plan (Linux)"]
-    APP["Web App (aiohttp bot)"]
-    MI["(Managed Identity)"]
-    BOT[Azure Bot Service]
+    RG[(Resource Group)]
+    ASP[App Service Plan]
+    MI[Managed Identity]
+    BOT[Arure Bot]
+    MFS[public/manifest.json]
+    KV[Key Vault]
+    APP[Web App]
   end
 
-  %% --- Databricks ---
-  subgraph DBX[Azure Databricks]
-    DBXSP[(Service Principal)]
-    SPACE[Genie Space]
+  subgraph Databricks[Azure Databricks]
+    DSP[(Service Principal)]
     UC[Unity Catalog]
-    CATALOG[Catalog]
-    SCHEMA[Schema]
-    WAREHOUSE[SQL Warehouse]
-    API[(Databricks APIs)]
+    CT[Catalog]
+    SC[Database]
+    TB[Tables]
+    VL[Volumes]
+    SPC[Genie Space]
+    WH[SQL Warehouse]
   end
 
-  %% --- Teams & Copilot ---
   subgraph Teams
-    TEAMSCLIENT[Teams Client]
-    APPPKG[Teams App Package]
+    APPK[App Package]
+    CHAT[Chatbot]
   end
 
-  subgraph Copilot
-    SKILL[Copilot Studio Skill]
-    PARENTBOT[Parent Bot]
+  subgraph Copilot[Copilot Studio]
+    SKI[Skill]
+    TOP[Topic/Tool]
+    Chatt[Chatbot]
   end
 
-  IaC[["Terraform (optional)"]]
+  IaC[[Terraform]] --> |Creates| RG
+  RG --> |Host| ASP
+  ASP --> |Link| APP
+  BOT --> |Expose| MFS
+  APP <--> |Uses| MI <--> |Access| KV
+  APP --> |Linked| BOT
 
-  %% --- Provisioning edges ---
-  IaC --> RG
-  IaC --> KV
-  IaC --> ASP
-  IaC --> APP
-  IaC --> BOT
-  IaC --> DBXSP
+  IaC --> |Creates| DSP
+  DSP --> |Access| UC
+  UC --> |Use Catalog| CT
+  CT --> |Use Schema |SC
+  SC --> |Select |TB
+  SC --> |Read Volume|VL
+  DSP --> |Can Run| SPC
+  DSP --> |Can Use| WH
 
-  %% --- Runtime edges ---
-  APP --- MI
-  MI --> KV
-  BOT --> APP
-  APP -->|OAuth client credentials| API
-  API --> SPACE
-  API --> UC
-  UC --> CATALOG --> SCHEMA
-  API --> WAREHOUSE
+  APPK --> CHAT
 
-  %% --- Clients ---
-  APPPKG --> TEAMSCLIENT
-  TEAMSCLIENT --> BOT
-  SKILL --> BOT
-  PARENTBOT --> SKILL
-```
+  MFS --> SKI
+  SKI --> TOP
+  TOP --> Chatt
+  Chatt -->|Teams Channel| CHAT
+
+  BOT -->|Distribute| APPK
+
+  ```
 
 ### Permissions & RBAC matrix
 | Principal | Scope | Permission |
@@ -153,7 +154,7 @@ sequenceDiagram
 ### Key environment / app settings (resolved via KV)
 | Key | Purpose |
 |---|---|
-| `DATABRICKS_HOST` | Workspace URL (e.g., `https://adb-XXXX.7.azuredatabricks.net`) |
+| `DATABRICKS_HOST` | Workspace URL (e.g., `https://adb-XXXX.X.azuredatabricks.net`) |
 | `DATABRICKS_SPACE_ID` | Genie Space (room) identifier |
 | `DATABRICKS_CLIENT_ID` / `DATABRICKS_CLIENT_SECRET` | Databricks **Service Principal** OAuth creds |
 | `DATABRICKS_OAUTH_SCOPES` | e.g., `all-apis sql offline_access` |
@@ -176,8 +177,8 @@ sequenceDiagram
 
 ### Local dev & test
 - Run locally with environment variables pointing to a test Genie space.  
-- Use **Bot Framework Emulator** or **Agents Playground** for message paths.  
-- For webhooks, use **dev tunnels** (ngrok/`devtunnel`) and update the Bot messaging endpoint accordingly.
+- Use **Agents Playground** for message paths.  
+- For webhooks, use **dev tunnels** (`devtunnel`) and update the Bot messaging endpoint accordingly.
 
 ### Attachments & SQL results (flow)
 ```mermaid
@@ -204,16 +205,4 @@ sequenceDiagram
         Bot-->>Bot: render markdown
     end
 ```
-
----
-
-## Appendix — Quick verification checklist
-
-- [ ] Bot messaging endpoint reachable: `https://<app>.azurewebsites.net/api/messages`  
-- [ ] Web App MI has **KV Secrets User**; AAD app exists and secret valid  
-- [ ] KV secrets set: AAD (`clientid/secret/tenantid`), DBX (`host/space/client_id/client_secret`)  
-- [ ] Databricks SP has **CAN_RUN** on Genie Space (and optional UC/SQL perms)  
-- [ ] Teams app package installed and pointed to correct bot app ID and endpoint
-
----
 

@@ -73,7 +73,7 @@ terraform apply "plan.tfplan"
 | string   | `databricks_sql_warehouse_id` | `"6a3f431e969b35e9"`                                                                  | ID of the SQL Warehouse associated with the Genie Space.                              |
 | string   | `databricks_catalog_name`  | `"_databricks_demos"`                                                                   | Target catalog in Unity Catalog where Genie data lives.                               |
 | string   | `databricks_schema_name`   | `"genie_data"`                                                                          | Target schema in Unity Catalog where Genie data lives.                                |
-| list     | `databricks_oauth_scopes`  | `["all-apis", "sql", "offline_access"]`                                                 | OAuth scopes granted to the Databricks service principal. Leave this default value.  |
+| list     | `databricks_oauth_scopes`  | `["all-apis", "sql", "offline_access"]`                                                 | OAuth scopes granted to the Databricks service principal. Leave this as default value.  |
 
 
 ### Inventory — Resources, Permissions, and Objects (Generated from TF)
@@ -119,8 +119,8 @@ terraform apply "plan.tfplan"
 | `databricks_service_principal_secret` | `genie_oauth` | SP secret consumed by Web App (stored in KV). |
 | `null_resource` | `grant_space_can_run` | **REST PATCH** to `/api/2.0/permissions/genie/{space}` to add **CAN_RUN** for the SP. |
 | `databricks_permissions` | `warehouse_can_use` | (Conditional) Grants **CAN_USE** on `var.databricks_sql_warehouse_id`. |
-| `databricks_grants` | `catalog` | (Conditional) Grants **USE_CATALOG** on `var.databricks_catalog_name`. |
-| `databricks_grants` | `schema` | (Conditional) Grants **USE_SCHEMA, SELECT, EXECUTE, READ_VOLUME** on `catalog.schema`. |
+| `databricks_grants` | `catalog` | Grants **USE_CATALOG** on `var.databricks_catalog_name`. |
+| `databricks_grants` | `schema` | Grants **USE_SCHEMA, SELECT, EXECUTE, READ_VOLUME** on `catalog.schema`. |
 
 #### Local Artifacts (created on your machine)
 | Resource | Path | Notes |
