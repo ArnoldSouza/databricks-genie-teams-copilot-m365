@@ -13,6 +13,8 @@
 
 > Bring **Databricks Genie**—natural‑language analytics over your Databricks datasets—directly into **Microsoft 365** via **Teams** and **Copilot Studio**. Turn everyday chat into governed data exploration, without moving users out of their flow.
 
+A general overview of the project is available [here (Medium)](https://medium.com/@arnoldporto/databricks-genie-m365-agents-ask-your-lakehouse-from-microsoft-teams-and-copilot-studio-42359344dc0f)
+
 ## Solution at a glance
 
 This solution **surfaces Databricks Genie inside Microsoft Teams** and optionally exposes it in **Copilot Studio** as a **skill**. Genie lets people ask **natural‑language questions** over tabular data and returns **interpretable answers** (with optional SQL). By meeting users in **Teams**, adoption increases while access stays **RBAC‑aligned** through Microsoft Entra and Unity Catalog.
