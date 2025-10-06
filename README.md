@@ -81,7 +81,69 @@ Contact: <arnoldporto@gmail.com> · <https://www.linkedin.com/in/arnoldsouza/>
     terraform plan -out plan.tfplan
     terraform apply "plan.tfplan"
     ```
-   - Details: [Azure automated deployment](docs/azure-deployment.md)
+   - Details: [Azure automated deployment](docs/azure-deployment.md)  
+   - Terraform handles for you all the infrastructure deployment and configuration automaticaly. 
+
+    ```mermaid
+    flowchart TB
+      subgraph Azure
+        RG[(Resource Group)]
+        ASP[App Service Plan]
+        MI[Managed Identity]
+        BOT[Arure Bot]
+        MFS[public/manifest.json]
+        KV[Key Vault]
+        APP[Web App]
+      end
+
+      subgraph Databricks[Azure Databricks]
+        DSP[(Service Principal)]
+        UC[Unity Catalog]
+        CT[Catalog]
+        SC[Database]
+        TB[Tables]
+        VL[Volumes]
+        SPC[Genie Space]
+        WH[SQL Warehouse]
+      end
+
+      subgraph Teams
+        APPK[App Package]
+        CHAT[Chatbot]
+      end
+
+      subgraph Copilot[Copilot Studio]
+        SKI[Skill]
+        TOP[Topic/Tool]
+        Chatt[Chatbot]
+      end
+
+      IaC[[Terraform]] --> |Creates| RG
+      RG --> |Host| ASP
+      ASP --> |Link| APP
+      BOT --> |Expose| MFS
+      APP <--> |Uses| MI <--> |Access| KV
+      APP --> |Linked| BOT
+
+      IaC --> |Creates| DSP
+      DSP --> |Access| UC
+      UC --> |Use Catalog| CT
+      CT --> |Use Schema |SC
+      SC --> |Select |TB
+      SC --> |Read Volume|VL
+      DSP --> |Can Run| SPC
+      DSP --> |Can Use| WH
+
+      APPK --> CHAT
+
+      MFS --> SKI
+      SKI --> TOP
+      TOP --> Chatt
+      Chatt -->|Teams Channel| CHAT
+
+      BOT -->|Distribute| APPK
+
+      ```
 
 3) **Create environment & deploy app**
    - Create environment:
